@@ -1,9 +1,5 @@
 import requests
+from src.costants import SERVER_URL, USERNAME
 
-ip = "161.97.173.214"
-porta = "80"
-
-url = f"http://{ip}:{porta}"
-
-def get_response(user):
-    return requests.get(url, params = {"username":user})
+def get_auth():
+    return requests.get(SERVER_URL, params = {"username":USERNAME})

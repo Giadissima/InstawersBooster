@@ -1,7 +1,6 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoSuchElementException, TimeoutException, WebDriverException
 from selenium.webdriver.chrome.options import Options
@@ -34,9 +33,7 @@ def clear():
         os.system("clear")
 
 def main():
-    # pages 
-    LOGIN_PAGE = "https://www.instagram.com/accounts/login/?hl=it"
-    INSTAGRAM_PAGE = "https://www.instagram.com/instagram/?hl=it"
+    
 
     # instance to colors terminal
     log = ColoredPrint()
@@ -45,28 +42,19 @@ def main():
     options = Options()
     options.headless = True
     options.add_argument('user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.93 Safari/537.36')
-    options.add_argument("--log-level=3");
+    options.add_argument("--log-level=3")
     driver = webdriver.Chrome("chromedriver.exe", options=options)
     i = Interface(driver)
 
     # instance of the main interface
     clear()
-    # create an awesome and pink ascii art
-    log.pink("""
-
-    _          __                            __                 __         
-   (_)__  ___ / /____ __    _____ _______   / /  ___  ___  ___ / /____ ____
-  / / _ \(_-</ __/ _ `/ |/|/ / -_) __(_-<  / _ \/ _ \/ _ \(_-</ __/ -_) __/
- /_/_//_/___/\__/\_,_/|__,__/\__/_/ /___/ /_.__/\___/\___/___/\__/\__/_/   
-                                                                        
-
-""")
+    
     # print and store time and username
     log.info("Start time: ", log.time(), "\nlogged with: ", i.USERNAME)
     log.store()
 
     try:
-        r = get_response(i.USERNAME)
+        r = get_auth(i.USERNAME)
         if r.status_code != 200:
             raise PermissionError
     except PermissionError:
@@ -173,7 +161,7 @@ def main():
                     log.err("incorrect password, retry")
                     log.store()
                 except PasswordTooShort:
-                    log.err("Password must be have a minimum od 6 characters, retry")
+                    log.err("Password must be have a minimum of 6 characters, retry")
                     log.store()
                 except TooAttempts:
                     log.err("you have made too many attempts, please try again in a few minutes")
