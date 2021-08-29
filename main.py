@@ -18,6 +18,7 @@ import os, traceback
 
 from string import ascii_letters
 from getpass import getpass
+import datetime
 
 """ 
     This program can help you to boost your instagram followers.
@@ -27,8 +28,17 @@ from getpass import getpass
 def genRandString(lenght=10):
     return ''.join([SystemRandom().choice(ascii_letters) for _ in range(lenght)])
 
+def isWindows():
+    return os.name == 'nt'
+
+def getToday():
+    return datetime.datetime.today().date()
+
+def getTomorrow():
+    return (getDate() + datetime.timedelta(days=1)).date()
+
 def clear():
-   if os.name == "nt":
+   if isWindows():
        os.system("cls")
    else:
         os.system("clear")
@@ -46,7 +56,11 @@ def main():
     options.headless = True
     options.add_argument('user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.93 Safari/537.36')
     options.add_argument("--log-level=3");
-    driver = webdriver.Chrome("chromedriver.exe", options=options)
+
+    driverExecutable = "chromedriver.exe" if isWindows() else "chromedriver" # Changing the executable by OS 
+
+    driver = webdriver.Chrome(driverExecutable, options=options)
+    
     i = Interface(driver)
 
     # instance of the main interface
@@ -216,7 +230,11 @@ def main():
     driver.get(INSTAGRAM_PAGE)
     followed = i.check_if_followed()
 
+    stopDate = getTomorrow()
     while True:
+        if getToday() > stopDates:
+            sleep(86400) # Wait 1 day            
+            stopDate = getTomorrow()
         try:
             driver.execute_script("document.body.scrollTop = 0; document.documentElement.scrollTop = 0;")
             sleep(3)
