@@ -3,6 +3,10 @@ from selenium.common.exceptions import (NoSuchElementException, TimeoutException
                                         WebDriverException)
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
+from os import getenv
+
+from dotenv import load_dotenv
+load_dotenv()
 
 
 class is_clickable(object):
@@ -25,13 +29,14 @@ class Interface:
         self.XPATH_follow_button = "//button[text()=\"Segui\"]"
         self.XPATH_credentials_button = "//button[@type='submit' and contains(.,\"Accedi\")]"
         self.XPATH_cookies_button = "//button[contains(.,\"Accetta\")]"
+        self.XPATH_cookies2_button = "//button[contains(.,\"Consenti\")]"
         self.XPATH_notification_button = "//button[contains(.,\"Non ora\")]"
         self.XPATH_stop_to_follow_button = "//button[text()=\"Non seguire più\"]"
         self.CLASS_unfollow = "glyphsSpriteFriend_Follow"
         self.XPATH_too_attempts = "//p[text()=\"Attendi qualche minuto prima di riprovare.\"]"
 
         # credentials
-        self.USERNAME = "icybix.boost"
+        self.USERNAME = getenv("INSTA_USERNAME")
         self.PASSWORD = ""
 
         self.followed = False
