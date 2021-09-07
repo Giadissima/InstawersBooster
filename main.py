@@ -263,7 +263,7 @@ def funzionamento():
                     log.success(log.time(), "follow button clicked")
                     log.store()
                     # # create a countdown to avoid instagram's suspicious
-                    sleep("WAIT_TIME")
+                    sleep(os.getenv("WAIT_TIME"))
                     # # print and log into a file
                     log.warn(log.time(), "end of countdown")
                     log.store()
