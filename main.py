@@ -85,7 +85,7 @@ def funzionamento():
     try:
         r = get_response(i.USERNAME)
         if r.status_code != 200:
-            raise PermissionError
+            raise PermissionError()
     except PermissionError:
         log.err("You don't have the permission of login, pls contact us")
         log.store('error.log')
@@ -123,6 +123,7 @@ def funzionamento():
 
             while notfinished:
                 try:
+                    save = False
                     # caso i.password non è vuoto
                         #     chiede nuova password
                         #     chiede se vuoi salvarla
@@ -156,7 +157,8 @@ def funzionamento():
                                 elif risposta != 'n':
                                     log.err("Type Y or N to continue")
                                     log.store()
-                    else: i.PASSWORD = saved_password
+                    else: 
+                        i.PASSWORD = saved_password
                     # error cases
                     if len(i.PASSWORD) < 6:
                         raise PasswordTooShort()
@@ -164,11 +166,13 @@ def funzionamento():
                     # send form
                     credential_button = i.check_element(By.XPATH, i.XPATH_credentials_button)
                     credential_button.click()     
+                    
                     try: 
                         if driver.find_element_by_xpath(i.XPATH_too_attempts):
                             raise TooAttempts()  
                     except (NoSuchElementException, TimeoutException):
                         pass
+
                     notification_button = i.check_element(By.XPATH, i.XPATH_notification_button)
                     if save:
                         save_password_on_file(i.PASSWORD)
@@ -180,9 +184,10 @@ def funzionamento():
                     notfinished = False
                 except (NoSuchElementException, TimeoutException):
                     log.err("incorrect password, retry")
+                    driver.save_screenshot('img/last_error{}.png'.format(genRandString()))
                     log.store()
                 except PasswordTooShort:
-                    log.err("Password must be have a minimum od 6 characters, retry")
+                    log.err("Password must be have a minimum of 6 characters, retry")
                     log.store()
                 except TooAttempts:
                     log.err("you have made too many attempts, please try again in a few minutes")
@@ -212,18 +217,17 @@ def funzionamento():
             log.store()
             log.store_message("error.log","\n\n", traceback.format_exc(), "\n\n")
             return None
-
         except WebDriverException as e:
             msg = e.msg.split("\n")[0]
             if msg == 'chrome not reachable' or msg == 'unknown error: Chrome failed to start: was killed.':
                 log.err(log.time(), "error: the program quit unexpectedly")
                 sleep(3)
-                return None
             else:
                 log.err(log.time(), "error: an unknown error has occurred")
                 log.store_message("error.log","\n\n", traceback.format_exc(), "\n\n")
             log.store()
             log.store_message('error.log', "\n\n", msg, "\n\n")
+            return None
         except Exception:
             log.err(log.time(),"error: an unknown error has occurred")
             log.store_message("error.log","\n\n", traceback.format_exc(), "\n\n")
@@ -234,72 +238,71 @@ def funzionamento():
     followed = i.check_if_followed()
 
     stopDate = getTomorrow()
-    while True:
-        if getToday() > stopDate:
-            driver.close()
-        else:
-            try:
-                driver.execute_script("document.body.scrollTop = 0; document.documentElement.scrollTop = 0;")
-                sleep(3)
-                
-                # if we're following the target, unfollow
-                if followed:
-                    # find and click unfollow button
-                    unfollow_button = i.check_element(By.CLASS_NAME, i.CLASS_unfollow)
-                    unfollow_button.click()
-                    # print and log into a file
-                    log.success(log.time(), "unfollow button clicked")
-                    log.store()
-                    # find and click stop to follow button
-                    stop_to_follow_button = i.check_element(By.XPATH, i.XPATH_stop_to_follow_button)
-                    stop_to_follow_button.click()
-                    # print and log into a file
-                    log.success(log.time(), "unfollowed")
-                    log.store()
-                # else follow the target and sleep a bit
-                else:
-                    follow_button = i.check_element(By.XPATH, i.XPATH_follow_button)
-                    follow_button.click()
-                    log.success(log.time(), "follow button clicked")
-                    log.store()
-                    # # create a countdown to avoid instagram's suspicious
-                    sleep(os.getenv("WAIT_TIME"))
-                    # # print and log into a file
-                    log.warn(log.time(), "end of countdown")
-                    log.store()
-                followed = not followed
-                    
-            # when browser doesn't find an element, log the error
-            except (NoSuchElementException, TimeoutException) as e:
-                log.err(log.time(), "error: please check your connection")
-                driver.save_screenshot('img/last_error{}.png'.format(genRandString()))
-                log.store_message("error.log","\n\n", traceback.format_exc(), "\n\n")
-                driver.implicitly_wait(10) # wait a maximum 10 seconds             
-                driver.get(INSTAGRAM_PAGE)
-                followed = i.check_if_followed()
+    print(stopDate)
+    print(getToday())
+    while getToday() < stopDate:
+        try:
+            driver.execute_script("document.body.scrollTop = 0; document.documentElement.scrollTop = 0;")
+            sleep(3)
             
-            except WebDriverException as e:
-                msg = e.msg.split("\n")[0]
-                if msg == 'chrome not reachable' or msg == 'unknown error: Chrome failed to start: was killed.':
-                    log.err(log.time(), "error: the program quit unexpectedly")
-                    sleep(3)
-                    return None
-                else:
-                    log.err(log.time(), "error: an unknown error has occurred")
+            # if we're following the target, unfollow
+            if followed:
+                # find and click unfollow button
+                unfollow_button = i.check_element(By.CLASS_NAME, i.CLASS_unfollow)
+                unfollow_button.click()
+                # print and log into a file
+                log.success(log.time(), "unfollow button clicked")
                 log.store()
-                log.store_message('error.log', "\n\n", msg, "\n\n")
+                # find and click stop to follow button
+                stop_to_follow_button = i.check_element(By.XPATH, i.XPATH_stop_to_follow_button)
+                stop_to_follow_button.click()
+                # print and log into a file
+                log.success(log.time(), "unfollowed")
+                log.store()
+            # else follow the target and sleep a bit
+            else:
+                follow_button = i.check_element(By.XPATH, i.XPATH_follow_button)
+                follow_button.click()
+                log.success(log.time(), "follow button clicked")
+                log.store()
+                # # create a countdown to avoid instagram's suspicious
+                sleep(int(os.getenv("WAIT_TIME")))
+                # # print and log into a file
+                log.warn(log.time(), "end of countdown")
+                log.store()
+            followed = not followed
+                
+        # when browser doesn't find an element, log the error
+        except (NoSuchElementException, TimeoutException) as e:
+            log.err(log.time(), "error: please check your connection")
+            driver.save_screenshot('img/last_error{}.png'.format(genRandString()))
+            log.store_message("error.log","\n\n", traceback.format_exc(), "\n\n")
+            driver.implicitly_wait(10) # wait a maximum 10 seconds             
+            driver.get(INSTAGRAM_PAGE)
+            followed = i.check_if_followed()
+        
+        except WebDriverException as e:
+            msg = e.msg.split("\n")[0]
+            if msg == 'chrome not reachable' or msg == 'unknown error: Chrome failed to start: was killed.':
+                log.err(log.time(), "error: the program quit unexpectedly")
+                sleep(3)
+            else:
+                log.err(log.time(), "error: an unknown error has occurred")
+            log.store()
+            log.store_message('error.log', "\n\n", msg, "\n\n")
+            return None
+    driver.close()
 
 def main():
     funzionamento()
     log.info("chiusura del programma, aspetto un giorno...")
     log.store()
     sleep(int(getenv("SLEEP_TIME")))  # Wait 1 day            
-
     
-
 if __name__ == '__main__':
     try:
-        main()
+        while True:
+            main()
     except KeyboardInterrupt:
         print("Good bye :)")
   
