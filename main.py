@@ -238,8 +238,6 @@ def funzionamento():
     followed = i.check_if_followed()
 
     stopDate = getTomorrow()
-    print(stopDate)
-    print(getToday())
     while getToday() < stopDate:
         try:
             driver.execute_script("document.body.scrollTop = 0; document.documentElement.scrollTop = 0;")
