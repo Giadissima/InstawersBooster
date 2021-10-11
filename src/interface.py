@@ -36,7 +36,7 @@ class Interface:
         self.XPATH_too_attempts = "//p[text()=\"Attendi qualche minuto prima di riprovare.\"]"
 
         # credentials
-        self.USERNAME = getenv("INSTA_USERNAME")
+        self.USERNAME = "%USERNAME%"
         self.PASSWORD = ""
 
         self.followed = False

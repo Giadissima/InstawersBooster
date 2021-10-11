@@ -54,11 +54,11 @@ def funzionamento():
 
     # Chrome driver
     options = Options()
-    options.headless = bool(getenv("INSTA_HEADLESS"))
+    options.headless = True
     options.add_argument('--no-sandbox')
     options.add_argument('--disable-dev-shm-usage') 
     options.add_argument('user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.93 Safari/537.36')
-    options.add_argument("--log-level=3");
+    options.add_argument("--log-level=3")
 
     driverExecutable = "chromedriver.exe" if isWindows() else "./chromedriver" # Changing the executable by OS 
 
