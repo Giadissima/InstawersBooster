@@ -3,3 +3,4 @@ error.log
 data.txt
 chromedriver.exe
 img/*
+.pythonenv
